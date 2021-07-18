@@ -56,6 +56,7 @@
 <body>
     <div class="w-full bg-blue-200 h-screen flex justify-center items-center">
        <form class="bg-blue-50 lg:w-3/12 md:w-5/12 w-8/12 px-5 pt-14 pb-8 flex flex-col justify-center items-center rounded-3xl shadow-xl" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+       <h1 class="w-full text-center mb-3 uppercase font-bold text-lg tracking-tighter text-gray-600">verfication</h1>
             <div class="overflow-hidden rounded-full py-2 bg-blue-100 w-full mb-5 shadow-inner flex items-center">
                 <i class="fas fa-user fa-lg mx-4"></i>
                 <input class="w-full outline-none bg-blue-100" id="user-index-number" placeholder="Enter Index Number" name="user-index-number" type="text" autocomplete="off" required>
