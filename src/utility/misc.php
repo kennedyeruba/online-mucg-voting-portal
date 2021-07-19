@@ -30,6 +30,37 @@
         return true;
     }
 
+    //INSERT VOTER INTO VOTERS TABLE
+    function prepare_bind_insert_candidate($candidate_first_name, $candidate_last_name, $candidate_index_number, $candidate_position, $candidate_gender, $candidate_level, $candidate_image){
+        
+        global $conn;
+        //PREPARE STATMENT
+        $prepared_stmt = $conn->prepare("INSERT INTO candidates (`first_name`, `last_name`, `index_number`, `position`, `gender`, `level`, `image`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+        //BIND PARAMETERS
+        $prepared_stmt->bind_param("sssssss", $first_name, $last_name, $index_number, $position, $gender, $level, $image);
+
+        //ASSIGN VALUES TO PARAMETERS
+        $first_name = $candidate_first_name;
+        $last_name = $candidate_last_name; 
+        $index_number = $candidate_index_number;
+        $position = $candidate_position;
+        $gender = $candidate_gender;
+        $level = $candidate_level;
+        $image = $candidate_image;
+
+        //EXECUTE PREPARED STATEMENT
+        $prepared_stmt->execute();
+
+        return true;
+    }
+    
+    function getCandidate($position){
+        global $conn;
+        $sql = "SELECT * FROM `candidates` WHERE `position` = '$position'";
+        $result = $conn->query($sql);
+    }
+
     //CLEAR SESSION BEFORE LOGGING OUT
     function log_out(){
         session_unset();

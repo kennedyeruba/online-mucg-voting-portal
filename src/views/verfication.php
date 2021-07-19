@@ -6,8 +6,8 @@
     $index_number_error = "";
     $security_question_error = "";
     $security_answer_error = "";
-    $password_update_success = "";
     $password_update_error = "";
+    $password_update_success = "";
 
     if(isset($_POST["verify-sub"])){
         $user_index_number = validate_data($_POST["user-index-number"]);

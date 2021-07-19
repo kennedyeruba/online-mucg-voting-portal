@@ -2,38 +2,48 @@
      include("../utility/db_conn.php");
      include("../utility/misc.php");
 
+     $user_index_number_error = "";
      $password_error = "";
      $user_security_question_error = "";
      $new_voter_success = "";
      $new_voter_error = "";
 
      if(isset($_POST["register-sub"])){
-          $user_first_name = validate_data($_POST["user-first-name"]);
-          $user_last_name = validate_data($_POST["user-last-name"]);
+          // $user_first_name = validate_data($_POST["user-first-name"]);
+          // $user_last_name = validate_data($_POST["user-last-name"]);
           $user_index_number = validate_data($_POST["user-index-number"]);
           $user_security_question = validate_data($_POST["user-security-question"]);
           $user_security_answer = validate_data($_POST["user-security-answer"]);
           $user_password = validate_data($_POST["user-password"]);
           $user_password_confirm = validate_data($_POST["user-password-confirm"]);
-
           
-          if($user_security_question == "Select security question"){
-               $user_security_question_error = "Please select valid question.";
-          }else{
-               if($user_password != $user_password_confirm){
-                    $password_error = "Password doesn't match, try again.";
-               }else{
+          $sql = "SELECT * FROM `mucg_db` WHERE `index_number` = '$user_index_number'";
+          $result = $conn->query($sql);
 
-                    if(prepare_bind_insert_voter($user_first_name, $user_last_name, $user_index_number, $user_security_question, $user_security_answer, $user_password)){
-                         $new_voter_success = "New voter added successfully.";
+          if($result != false && $result->num_rows > 0){
+               while($row = $result->fetch_assoc()){
+                    $user_first_name = $row["first_name"];
+                    $user_last_name = $row["last_name"];
+               }
+
+               if($user_security_question == "Select security question"){
+                    $user_security_question_error = "Please select valid question.";
+               }else{
+                    if($user_password != $user_password_confirm){
+                         $password_error = "Password doesn't match, try again.";
                     }else{
-                         $new_voter_error = "Operation could not be completed, try again.";
+          
+                         if(prepare_bind_insert_voter($user_first_name, $user_last_name, $user_index_number, $user_security_question, $user_security_answer, $user_password)){
+                              $new_voter_success = "New voter added successfully.";
+                         }else{
+                              $new_voter_error = "Operation could not be completed, try again.";
+                         }
                     }
                }
+          }else{
+               $user_index_number_error = "Index number doesn't exist, try again.";
           }
           
-
-
      }
      $conn->close();
 ?>
@@ -53,24 +63,15 @@
        <form class="bg-blue-50 lg:w-3/12 md:w-5/12 w-8/12 px-5 pt-14 pb-8 flex flex-col justify-center items-center rounded-3xl shadow-xl" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
           <h1 class="w-full text-center mb-3 uppercase font-bold text-lg tracking-tighter text-gray-600">Register</h1>
            <div class="overflow-hidden rounded-full py-2 bg-blue-100 w-full mb-5 shadow-inner flex items-center">
-                <i class="fas fa-user fa-lg mx-4"></i>
-                <input class="w-full outline-none bg-blue-100" id="user-first-name" placeholder="Enter First Name" name="user-first-name" type="text" autocomplete="off" required>
-           </div>
-           <div class="overflow-hidden rounded-full py-2 bg-blue-100 w-full mb-5 shadow-inner flex items-center">
-                <i class="fas fa-user fa-lg mx-4"></i>
-                <input class="w-full outline-none bg-blue-100" id="user-last-name" placeholder="Enter last name" name="user-last-name" type="text" autocomplete="off" required>
-           </div>
-           <div class="overflow-hidden rounded-full py-2 bg-blue-100 w-full mb-5 shadow-inner flex items-center">
-                <i class="fas fa-user fa-lg mx-4"></i>
+                <i class="fas fa-user mx-4"></i>
                 <input class="w-full outline-none bg-blue-100" id="user-index-number" placeholder="Enter Index Number" name="user-index-number" type="text" autocomplete="off" required>
            </div>
            <div class="overflow-hidden rounded-full py-2 px-4 bg-blue-100 w-full mb-5 shadow-inner flex items-center">
-                <!-- <input class="w-full outline-none bg-blue-100" id="user-index-number" placeholder="Enter Index Number" name="user-index-number" type="text"> -->
                 <select class="w-full outline-none bg-blue-100" name="user-security-question" id="user-security-question" required>
                     <option>Select security question</option>
-                    <option value="Mother's Name">Mother's Name</option>
-                    <option value="Favourite Food">Favourite Food</option>
-                    <option value="Favourite Color">Favourite Color</option>
+                    <option value="mother's name">Mother's Name</option>
+                    <option value="favourite food">Favourite Food</option>
+                    <option value="favourite color">Favourite Color</option>
                 </select>
            </div>
            <div class="overflow-hidden rounded-full py-2 bg-blue-100 w-full mb-5 shadow-inner flex items-center">
@@ -84,6 +85,7 @@
                 <i class="fas fa-user-lock fa-lg mx-4"></i>
                 <input class="w-full outline-none bg-blue-100" id="user-password-confirm" name="user-password-confirm" type="password" placeholder="Confirm password" required>
            </div>
+           <span class="text-red-600"><?php echo $user_index_number_error; ?></span>
            <span class="text-red-600"><?php echo $password_error; ?></span>
            <span class="text-red-600"><?php echo $user_security_question_error; ?></span>
            <span class="text-red-600"><?php echo $new_voter_error; ?></span>
